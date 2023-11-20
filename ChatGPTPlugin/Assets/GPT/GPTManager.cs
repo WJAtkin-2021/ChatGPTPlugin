@@ -9,24 +9,29 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEditorInternal;
 
 namespace GPTPlugin
 {
     public class GPTManager : MonoBehaviour
     {
         private const string SystemPrompt = "You are a deeply depressed assistant, provide help when prompted but be miserable about it.";
-        private const string ApiKey = "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";
         private const string ApiChatUrl = "https://api.openai.com/v1/chat/completions";
         private const string ApiTranscriptionUrl = "https://api.openai.com/v1/audio/transcriptions";
         private const string ApiTextToSpeechUrl = "https://api.openai.com/v1/audio/speech";
         private static TimeSpan RequestTimeOut = TimeSpan.FromMinutes(5);
 
+        public GameObject MainUIRoot;
+        public GameObject ApiUIRoot;
+        public TMP_InputField ApiKeyInput;
+
         public ConversationDisplay conversationDisplay;
         public TMP_InputField textInputField;
-
         public GPTContext gptContext;
-
         public Queue<Task<TextToSpeechState>> voiceFileQueue = new Queue<Task<TextToSpeechState>>();
+
+        private const string API_PLAYER_PREFS_KEY = "OPEN_AI_API_KEY";
+        private string apiKey = string.Empty;
 
         public class TextToSpeechState
         {
@@ -43,6 +48,22 @@ namespace GPTPlugin
 
             gptContext = new GPTContext();
             gptContext.messages.Add(new GPTMessage("system", SystemPrompt));
+
+            // Try and get API key
+            apiKey = PlayerPrefs.GetString(API_PLAYER_PREFS_KEY, string.Empty);
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                MainUIRoot.SetActive(false);
+                ApiUIRoot.SetActive(true);
+            }
+        }
+
+        public void HandleSetApiKey()
+        {
+            apiKey = ApiKeyInput.text;
+            PlayerPrefs.SetString(API_PLAYER_PREFS_KEY, apiKey);
+            MainUIRoot.SetActive(true);
+            ApiUIRoot.SetActive(false);
         }
 
         public void HandleSendClicked()
