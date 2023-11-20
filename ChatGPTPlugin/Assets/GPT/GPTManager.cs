@@ -3,20 +3,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace GPTPlugin
 {
     public class GPTManager : MonoBehaviour
     {
-        private const string SystemPrompt = "You are a deeply depressed, provide help when prompted but be miserable about it.";
+        private const string SystemPrompt = "You are a deeply depressed assistant, provide help when prompted but be miserable about it.";
         private const string ApiKey = "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";
         private const string ApiChatUrl = "https://api.openai.com/v1/chat/completions";
         private const string ApiTranscriptionUrl = "https://api.openai.com/v1/audio/transcriptions";
@@ -293,7 +291,7 @@ namespace GPTPlugin
                 }
                 else
                 {
-                    throw new Exception($"HTTP Error Code: {response.StatusCode}");
+                    throw new Exception($"HTTP Error Code: {response.StatusCode} | Input: {input}");
                 }
             }
         }

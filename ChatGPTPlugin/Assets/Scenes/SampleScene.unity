@@ -2884,6 +2884,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MessageRootNode: {fileID: 1731727855}
+  ScrollRect: {fileID: 1896722868}
   GPTChatTemplate: {fileID: 547528896}
   UserChatTemplate: {fileID: 1727714851}
 --- !u!1660057539 &9223372036854775807

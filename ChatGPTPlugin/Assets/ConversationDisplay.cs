@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GPTPlugin
 {
     public class ConversationDisplay : MonoBehaviour
     {
         public GameObject MessageRootNode;
+        public ScrollRect ScrollRect;
 
         public GameObject GPTChatTemplate;
         public GameObject UserChatTemplate;
@@ -29,13 +32,26 @@ namespace GPTPlugin
             if (actor == "assistant")
             {
                 GameObject newMessage = Instantiate(GPTChatTemplateClone, MessageRootNode.transform);
-                newMessage.GetComponent<ChatMessageController>().Init($"ChatGPT: {message}");
+                newMessage.GetComponent<ChatMessageController>().Init($"SadGPT: {message}");
             }
             else if (actor == "user")
             {
                 GameObject newMessage = Instantiate(UserChatTemplateClone, MessageRootNode.transform);
                 newMessage.GetComponent<ChatMessageController>().Init($"User: {message}");
             }
+            else
+            {
+                throw new NotImplementedException("Invalid actor when appending chat message");
+            }
+
+            StartCoroutine(ScrollToBottomDelayed());
+        }
+
+        public IEnumerator ScrollToBottomDelayed()
+        {
+            yield return new WaitForEndOfFrame();
+
+            ScrollRect.ScrollToBottom();
         }
     }
 }
