@@ -128,7 +128,7 @@ namespace GPTPlugin
                 using (HttpClient client = new HttpClient())
                 {
                     client.Timeout = RequestTimeOut;
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {ApiKey}");
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
 
                     // Add the client message to the context
                     gptContext.messages.Add(new GPTMessage("user", input));
@@ -234,7 +234,7 @@ namespace GPTPlugin
                 using (HttpClient client = new HttpClient())
                 {
                     client.Timeout = RequestTimeOut;
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {ApiKey}");
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
 
 
                     MultipartFormDataContent form = new MultipartFormDataContent();
@@ -279,7 +279,7 @@ namespace GPTPlugin
             using (HttpClient client = new HttpClient())
             {
                 client.Timeout = RequestTimeOut;
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {ApiKey}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
 
                 GPTTextToSpeech speechPayload = new GPTTextToSpeech(input);
 
