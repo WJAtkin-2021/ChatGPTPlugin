@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,15 +6,15 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
-using UnityEditorInternal;
 
 namespace GPTPlugin
 {
     public class GPTManager : MonoBehaviour
     {
-        private const string SystemPrompt = "You are a deeply depressed assistant, provide help when prompted but be miserable about it.";
+        private const string SystemPrompt = "You are a deeply depressed assistant, provide help when prompted but be miserable about it.";  
         private const string ApiChatUrl = "https://api.openai.com/v1/chat/completions";
         private const string ApiTranscriptionUrl = "https://api.openai.com/v1/audio/transcriptions";
         private const string ApiTextToSpeechUrl = "https://api.openai.com/v1/audio/speech";
@@ -52,9 +51,19 @@ namespace GPTPlugin
             apiKey = PlayerPrefs.GetString(API_PLAYER_PREFS_KEY, string.Empty);
             if (string.IsNullOrEmpty(apiKey))
             {
-                MainUIRoot.SetActive(false);
-                ApiUIRoot.SetActive(true);
+                AskForAPIKey();
             }
+        }
+
+        public void ResetGPT()
+        {
+            gptContext = new GPTContext(SystemPrompt);
+        }
+
+        public void AskForAPIKey()
+        {
+            MainUIRoot.SetActive(false);
+            ApiUIRoot.SetActive(true);
         }
 
         public void HandleSetApiKey()
@@ -95,7 +104,7 @@ namespace GPTPlugin
                         if (voiceFileQueue.Peek().Result.isFinished)
                         {
                             TextToSpeechState state = voiceFileQueue.Dequeue().Result;
-                            if (state.isFinished)
+                            if (state.isFinished && !string.IsNullOrEmpty(state.filePath))
                             {
                                 audioSource.clip = state.audioClip;
                                 audioSource.Play();
@@ -170,7 +179,17 @@ namespace GPTPlugin
                     }
                     else
                     {
-                        throw new Exception($"HTTP Error Code: {response.StatusCode}");
+                        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            // The API is probably stale so ask for a new one...
+                            ResetGPT();
+                            AskForAPIKey();
+                        }
+                        else
+                        {
+                            // Some other exception that needs an error throwing
+                            throw new Exception($"HTTP Error Code: {response.StatusCode}");
+                        }
                     }
                 }
             }
@@ -306,11 +325,13 @@ namespace GPTPlugin
                     }
                     else
                     {
+                        speechState.isFinished = true;
                         throw new Exception("Invalid response format");
                     }
                 }
                 else
                 {
+                    speechState.isFinished = true;
                     throw new Exception($"HTTP Error Code: {response.StatusCode} | Input: {input}");
                 }
             }
