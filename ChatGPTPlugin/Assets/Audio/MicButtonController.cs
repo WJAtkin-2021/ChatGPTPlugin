@@ -14,6 +14,11 @@ namespace GPTPlugin
 
         private bool m_isRecording = false;
 
+        private void OnEnable()
+        {
+            AudioManager.OnMicTimeout += HandleMicTimeout;
+        }
+
         public void HandleButtonClicked()
         {
             if (!m_isRecording)
@@ -28,6 +33,18 @@ namespace GPTPlugin
             }
 
             m_isRecording = !m_isRecording;
+        }
+
+        public void HandleMicTimeout()
+        {
+            image.sprite = offSprite;
+            audioManager.EndAudioRecording();
+            m_isRecording = false;
+        }
+
+        private void OnDisable()
+        {
+            AudioManager.OnMicTimeout -= HandleMicTimeout;
         }
     }
 }

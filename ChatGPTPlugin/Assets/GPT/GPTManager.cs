@@ -19,7 +19,7 @@ namespace GPTPlugin
         private const string ApiChatUrl = "https://api.openai.com/v1/chat/completions";
         private const string ApiTranscriptionUrl = "https://api.openai.com/v1/audio/transcriptions";
         private const string ApiTextToSpeechUrl = "https://api.openai.com/v1/audio/speech";
-        private static TimeSpan RequestTimeOut = TimeSpan.FromMinutes(5);
+        private static TimeSpan RequestTimeOut = TimeSpan.FromMinutes(2);
 
         public GameObject MainUIRoot;
         public GameObject ApiUIRoot;
@@ -46,8 +46,7 @@ namespace GPTPlugin
         {
             AudioManager.OnAudioSavedToFile += HandleOnVoiceClip;
 
-            gptContext = new GPTContext();
-            gptContext.messages.Add(new GPTMessage("system", SystemPrompt));
+            gptContext = new GPTContext(SystemPrompt);
 
             // Try and get API key
             apiKey = PlayerPrefs.GetString(API_PLAYER_PREFS_KEY, string.Empty);
@@ -294,7 +293,7 @@ namespace GPTPlugin
 
                     if (responseBody != null)
                     {
-                        string fileName = $"Response-{Guid.NewGuid().ToString()}.mp3";
+                        string fileName = $"Response-{Guid.NewGuid()}.mp3";
 
                         string filePath = Path.Combine(Application.persistentDataPath, fileName);
                         using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
